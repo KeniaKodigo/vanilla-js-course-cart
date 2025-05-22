@@ -1,6 +1,11 @@
 import Swal from "sweetalert2"
 
-let array_cart = [] //arreglo de objetos (cursos)
+//let array_cart = [] //arreglo de objetos (cursos)
+/**
+ * json.parse
+ * json.strinfy
+ */
+export let array_cart = JSON.parse(localStorage.getItem('cart-fsj28')) || []
 //accediendo al tbody de la tabla
 let tbody = document.querySelector('tbody')
 
@@ -46,13 +51,15 @@ function getCourseData(course){
     console.log(object_course)
     //agregando el curso al arreglo
     array_cart.push(object_course)
+    //actualizar el localstorage
+    localStorage.setItem('cart-fsj28', JSON.stringify(array_cart))
     console.table(array_cart)
 
     cartHTML()
 }
 
 //dibujar la tabla con los cursos del carrito
-function cartHTML(){
+export function cartHTML(){
 
     tbody.innerHTML = ""
 
@@ -75,3 +82,35 @@ function cartHTML(){
     })
 }
 
+//funcion para eliminar un curso
+export function deleteCourse(e){
+    console.log(e.target)
+
+    const courseId = e.target.getAttribute('data-id')
+    console.log(courseId)
+
+    Swal.fire({
+        title: "Estas seguro de eliminar el curso?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+        if (result.isConfirmed) {
+            //eliminar curso
+            array_cart = array_cart.filter(course => course.id !== courseId)
+            console.log(array_cart)
+            localStorage.setItem('cart-fsj28', JSON.stringify(array_cart))
+            
+            Swal.fire({
+                title: "Deleted!",
+                text: "Curso eliminado correctamente",
+                icon: "success"
+            });
+
+            cartHTML()
+        }
+        });
+}
